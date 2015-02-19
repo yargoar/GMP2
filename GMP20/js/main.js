@@ -8,6 +8,7 @@ var _ = require('underscore');
 var config = require('config');
 var mManager = require('musicManager');
 var mPlayer = require('musicPlayer');
+var rControl = require('remoteControl');
 
 var l = require('logger'); // logger
 
@@ -29,8 +30,18 @@ tray.on('click', function(){ win.restore(); });
 tray.menu = menu;
 // ENDS TRAY
 
+//Remote control events
+rControl.on('reset-lists',function(){  mManager.resetLists(); });
+rControl.on('update-list',function(){  mManager.updateList(); });
+rControl.on('play-special',function( data ){   mManager.playSpecial( data ); });
+rControl.on('nothing',function(){  /*/console.log('no orders');/*/ });
+
+
+
 config.init();
 mManager.init( config.player, config.server, openDatabase('mydb', '1.0', 'my first database', 2 * 1024 * 1024) );
+rControl.init(config.player, config.server, 50000);
+
 
 
 $(function(){
